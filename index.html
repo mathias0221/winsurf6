@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enrutador</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #3f51b5;
+            font-family: Arial, sans-serif;
+            font-weight: bold;
+        }
+
+
+        h1 {
+            color: white;
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        button {
+            padding: 0.8rem 1.5rem;
+            font-size: 1rem;
+            border: 2px solid white;
+            border-radius: 4px;
+            background-color: transparent;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 200px;
+            text-transform: uppercase;
+            text-align: center;
+        }
+
+        .action-button {
+            padding: 0.8rem 1.5rem;
+            font-size: 1rem;
+            border: 2px solid white;
+            border-radius: 4px;
+            background-color: transparent;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 200px;
+            text-transform: uppercase;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        button:hover {
+            background-color: white;
+            color: #3f51b5;
+        }
+
+        .action-button:hover {
+            background-color: white;
+            color: #3f51b5;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 2rem;
+                margin-bottom: 1rem;
+            }
+
+            .button-container {
+                flex-direction: column;
+                width: 90%;
+            }
+
+            button {
+                min-width: 100%;
+                margin-bottom: 0.8rem;
+                padding: 1rem;
+                font-size: 1.1rem;
+            }
+
+            .action-button {
+                min-width: 100%;
+                margin-bottom: 0.8rem;
+                padding: 1rem;
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Enrutador</h1>
+    <div class="button-container">
+        <a href="lectorqr.html" class="action-button" style="margin-bottom:20px;">
+            <span style="font-size:1.3em;">&#128247;</span> Cámara
+        </a>
+        <button onclick="handleClick('zonificar')">Zonificar Excel</button>
+        <button onclick="handleClick('database')">Base de Datos</button>
+    </div>
+
+    <script>
+        function handleClick(action) {
+            if (action === 'database') {
+                window.location.href = 'database.html';
+            } else if (action === 'zonificar') {
+                window.location.href = 'zonificar.html';
+            }
+        }
+    </script>
+</body>
+</html>

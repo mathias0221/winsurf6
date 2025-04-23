@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zonificar Excel - Enrutador</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #3f51b5;
+            font-family: Arial, sans-serif;
+            color: white;
+        }
+        .header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            max-width: 800px;
+        }
+        .back-button {
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+            border: 2px solid white;
+            border-radius: 4px;
+            background-color: transparent;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+        .back-button:hover {
+            background-color: white;
+            color: #3f51b5;
+        }
+        h1 {
+            color: white;
+            font-size: 2rem;
+            margin: 0;
+            text-align: center;
+            flex-grow: 1;
+        }
+        .main-container {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            width: 100%;
+        }
+        .action-button {
+            padding: 0.8rem 1.5rem;
+            font-size: 1rem;
+            border: 2px solid white;
+            border-radius: 4px;
+            background-color: transparent;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+        .action-button:hover {
+            background-color: white;
+            color: #3f51b5;
+        }
+        .file-input {
+            display: none;
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .data-table th,
+        .data-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+        .data-table th {
+            background-color: rgba(255, 255, 255, 0.2);
+            font-weight: bold;
+        }
+        .data-table tr:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .no-data {
+            text-align: center;
+            padding: 2rem;
+            color: rgba(255, 255, 255, 0.7);
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+        }
+        .list-title {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .list-checkbox {
+            margin-right: 0.5rem;
+        }
+        .saved-list-card {
+            background: rgba(30,40,70,0.8);
+            border-radius: 12px;
+            margin-bottom: 1.2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+            padding: 1rem;
+        }
+        .saved-list-header {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-size: 1.1rem;
+            color: white;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        .saved-list-header:hover {
+            text-decoration: underline;
+        }
+        .saved-list-icon {
+            margin-right: 0.7rem;
+            color: #90caf9;
+            font-size: 1.4rem;
+        }
+        .saved-list-count {
+            color: #b0bec5;
+            font-size: 0.95rem;
+            margin-left: 0.7rem;
+        }
+        .saved-list-table {
+            margin-top: 0.7rem;
+            display: none;
+        }
+        .delete-list-btn {
+            background: transparent;
+            border: none;
+            color: #ef5350;
+            margin-left: auto;
+            font-size: 1.3rem;
+            cursor: pointer;
+        }
+        #qrSection {
+            display: none;
+            width: 100%;
+            max-width: 800px;
+            margin: auto;
+        }
+        #qrSection .back-button {
+            margin: 20px 0 10px 0;
+        }
+        #qrSection h2 {
+            color: white;
+            text-align: center;
+        }
+        #qrSection .video-container {
+            background: #222;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+            position: relative;
+            aspect-ratio: 4/3;
+        }
+        #qrSection video {
+            width: 100%;
+            height: 100%;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+        #qrSection canvas {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+        }
+        #qrSection .controls {
+            margin-top: 10px;
+        }
+        #qrSection button {
+            margin: 5px;
+        }
+        #qrSection #resultadoQR {
+            margin-top: 10px;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            font-size: 16px;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #222;
+        }
+        #qrSection #zonaQR {
+            margin-top: 8px;
+            padding: 8px;
+            background: #3f51b5;
+            border-radius: 8px;
+            color: white;
+            font-size: 18px;
+            display: none;
+            text-align: center;
+        }
+        #qrSection .mensaje-error {
+            display: none;
+            color: red;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        /* Estilos para el contenedor de progreso */
+        .progress-container {
+            display: none;
+            width: 100%;
+            max-width: 800px;
+            margin: 20px auto;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .progress-title {
+            color: white;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: #4CAF50;
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+
+        .progress-text {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            line-height: 20px;
+            color: white;
+            font-weight: bold;
+            text-shadow: 1px 1px 1px rgba(0,0,0,0.5);
+        }
+
+        .progress-status {
+            color: white;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+        #historialZonas {
+            margin-top: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 8px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        
+        #historialZonas div {
+            padding: 5px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        
+        #historialZonas div:last-child {
+            border-bottom: none;
+        }
+        
+        .qr-controls {
+            display: flex;
+            gap: 8px;
+            margin: 8px 0;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .qr-controls .action-button {
+            padding: 8px 12px;
+            font-size: 14px;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+</head>
+<body>
+    <div class="header">
+        <button class="back-button" onclick="goBack()">Volver</button>
+        <h1>Zonificar Excel</h1>
+    </div>
+    <div class="main-container">
+        <div class="action-buttons">
+            <input type="file" id="fileInput" class="file-input" accept=".xlsx,.xls" onchange="handleFileSelect(event)">
+            <button class="action-button" onclick="document.getElementById('fileInput').click()">
+                Seleccionar Excel
+            </button>
+            <button class="action-button" onclick="deleteSelectedLists()">
+                Eliminar Lista
+            </button>
+        </div>
+        <div id="progressContainer" class="progress-container">
+            <div class="progress-title">Procesando documento Excel</div>
+            <div class="progress-bar">
+                <div id="progressFill" class="progress-fill"></div>
+                <div id="progressText" class="progress-text">0%</div>
+            </div>
+            <div id="progressStatus" class="progress-status">Iniciando procesamiento...</div>
+        </div>
+        <div id="dataContainer"></div>
+        <div id="savedListsContainer"></div>
+    </div>
+    <div id="qrSection">
+        <div class="qr-controls">
+            <button id="iniciarCamaraQR" class="action-button">Iniciar Cámara</button>
+            <button id="detenerCamaraQR" class="action-button" disabled>Detener Cámara</button>
+            <button id="cambiarCamaraQR" class="action-button" disabled>Cambiar Cámara</button>
+            <button id="limpiarHistorial" class="action-button">Limpiar Historial</button>
+        </div>
+        <div id="historialZonas"></div>
+    </div>
+    <script>
+        let excelData = [];
+        let processedData = [];
+        let originalFile = null;
+        let savedLists = [];
+        let isProcessing = false;
+        let historialZonas = [];
+        
+        function goBack() {
+            window.location.href = 'index.html';
+        }
+        
+        function updateProgress(percent, status) {
+            const progressContainer = document.getElementById('progressContainer');
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            const progressStatus = document.getElementById('progressStatus');
+            
+            progressContainer.style.display = 'block';
+            progressFill.style.width = `${percent}%`;
+            progressText.textContent = `${Math.round(percent)}%`;
+            if (status) {
+                progressStatus.textContent = status;
+            }
+            
+            if (percent >= 100) {
+                setTimeout(() => {
+                    progressContainer.style.display = 'none';
+                }, 1000);
+            }
+        }
+
+        async function processExcelData() {
+            if (isProcessing) return;
+            isProcessing = true;
+            
+            updateProgress(0, 'Iniciando procesamiento...');
+            
+            // Procesar en lotes de 50 registros
+            const batchSize = 50;
+            const totalRegistros = excelData.length;
+            processedData = [];
+            
+            for (let i = 0; i < totalRegistros; i += batchSize) {
+                const batch = excelData.slice(i, i + batchSize);
+                
+                // Procesar el lote actual
+                const batchResults = await processBatch(batch);
+                processedData.push(...batchResults);
+                
+                // Actualizar progreso
+                const progress = (i + batch.length) / totalRegistros * 100;
+                updateProgress(
+                    progress,
+                    `Procesando registros ${i + 1} - ${Math.min(i + batch.length, totalRegistros)} de ${totalRegistros}`
+                );
+                
+                // Permitir que la UI se actualice
+                await new Promise(resolve => setTimeout(resolve, 0));
+            }
+            
+            updateProgress(100, 'Procesamiento completado');
+            displayProcessedData();
+            isProcessing = false;
+        }
+
+        async function processBatch(batch) {
+            return batch.map(row => {
+                const codigo = row.Receipt ? String(row.Receipt).trim() : '';
+                let nombre = '';
+                let zona = 'sin zona';
+
+                if (row.Consignee) {
+                    const consigneeText = String(row.Consignee).trim();
+                    console.log('Procesando:', codigo, consigneeText); // Debug
+
+                    // Obtener el texto antes de la última coma
+                    const ultimaComa = consigneeText.lastIndexOf(',');
+                    if (ultimaComa !== -1) {
+                        // Obtener todo el texto y dividirlo en partes
+                        const textoCompleto = consigneeText.toLowerCase();
+                        const partes = textoCompleto.split(',').map(p => p.trim());
+                        
+                        // Obtener la última parte antes de la última coma
+                        const ultimaParte = partes[partes.length - 2] ? partes[partes.length - 2].trim() : '';
+                        
+                        // Verificar si la última parte contiene la palabra "caracas"
+                        if (!ultimaParte.includes('caracas')) {
+                            // Si no contiene "caracas", usar la última parte completa como zona
+                            zona = ultimaParte;
+                        } else {
+                            // Si contiene "caracas", buscar coincidencias en todo el texto
+                            const routes = loadRoutes();
+                            if (routes && routes.length > 0) {
+                                let maxCoincidencias = 0;
+                                let zonaGanadora = '';
+                                let coincidenciasPorZona = {};
+
+                                // Preparar el texto para búsqueda
+                                const textoNormalizado = textoCompleto
+                                    .replace(/\n/g, ' ')
+                                    .replace(/\[.*?\]/g, '')
+                                    .replace(/\d+/g, '')
+                                    .toLowerCase();
+
+                                // Eliminar palabras comunes que podrían causar falsos positivos
+                                const palabrasIgnorar = [
+                                    'caracas', 'general', 'edificio', 'avenida', 'calle', 'local', 'piso', 'centro',
+                                    'guia', 'instrucciones', 'numero', 'indicado', 'con', 'el', 'la', 'las', 'los',
+                                    'platino', 'en', 'del', 'telefono', 'llamar', 'preguntar', 'por', 'para'
+                                ];
+                                const palabrasTexto = textoNormalizado
+                                    .split(/[\s,]+/)
+                                    .filter(p => p && !palabrasIgnorar.includes(p) && p.length > 2);
+
+                                routes.forEach(route => {
+                                    if (typeof route === 'object' && route.content) {
+                                        const contenidoCarpeta = route.content.toLowerCase();
+                                        let coincidencias = 0;
+                                        let palabrasCoincidentes = new Set();
+
+                                        // Buscar coincidencias de frases completas primero
+                                        const frases = route.content.toLowerCase().split(',').map(f => f.trim());
+                                        frases.forEach(frase => {
+                                            if (frase && frase.length > 3 && textoNormalizado.includes(frase)) {
+                                                coincidencias += 3; // Más peso a frases completas
+                                                console.log(`Coincidencia de frase: "${frase}" en zona ${route.name}`);
+                                                palabrasCoincidentes.add(frase);
+                                            }
+                                        });
+
+                                        // Luego buscar palabras individuales significativas
+                                        palabrasTexto.forEach(palabra => {
+                                            // Solo considerar palabras que sean realmente significativas
+                                            if (palabra.length > 3 && // Palabras más largas
+                                                contenidoCarpeta.includes(palabra) && 
+                                                !palabrasCoincidentes.has(palabra)) {
+                                                coincidencias++;
+                                                console.log(`Coincidencia de palabra: "${palabra}" en zona ${route.name}`);
+                                                palabrasCoincidentes.add(palabra);
+                                            }
+                                        });
+
+                                        coincidenciasPorZona[route.name] = {
+                                            coincidencias: coincidencias,
+                                            palabras: Array.from(palabrasCoincidentes)
+                                        };
+
+                                        // Actualizar zona ganadora solo si hay coincidencias significativas
+                                        if (coincidencias > maxCoincidencias) {
+                                            maxCoincidencias = coincidencias;
+                                            zonaGanadora = route.name;
+                                        }
+                                    }
+                                });
+
+                                // Mostrar resumen detallado de coincidencias
+                                console.log('Análisis detallado:', {
+                                    codigo: codigo,
+                                    texto: textoNormalizado,
+                                    palabrasAnalizadas: palabrasTexto,
+                                    coincidenciasPorZona: coincidenciasPorZona
+                                });
+
+                                // Si hay coincidencias significativas, usar la zona ganadora
+                                // Si no, usar el texto antes de la última coma
+                                zona = maxCoincidencias > 2 ? zonaGanadora : ultimaParte;
+                            }
+                        }
+                    }
+
+                    // Extraer el nombre del consignee (primera línea)
+                    const lines = consigneeText.split(/\r?\n/);
+                    if (lines.length > 0) {
+                        const firstLine = lines[0];
+                        const bracketIndex = firstLine.indexOf('[');
+                        nombre = bracketIndex !== -1 ? firstLine.substring(0, bracketIndex).trim() : firstLine.trim();
+                    }
+                }
+
+                return { codigo, nombre, zona };
+            });
+        }
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            originalFile = file;
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                    excelData = XLSX.utils.sheet_to_json(firstSheet);
+                    
+                    // Procesar los datos con la barra de progreso
+                    await processExcelData();
+                    saveCurrentList();
+                    displaySavedLists();
+                } catch (error) {
+                    alert('Error al procesar el archivo Excel: ' + error.message);
+                    updateProgress(100, 'Error en el procesamiento');
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+        function loadRoutes() {
+            const routesJson = localStorage.getItem('routes');
+            return routesJson ? JSON.parse(routesJson) : [];
+        }
+        function saveCurrentList() {
+            if (!processedData || processedData.length === 0) return;
+            let lists = JSON.parse(localStorage.getItem('zonifiedLists') || '[]');
+            const fecha = new Date();
+            const nombreLista = originalFile ? originalFile.name.replace(/\.[^/.]+$/, '') : 'Lista_' + fecha.getTime();
+            lists.push({
+                name: nombreLista + ' - ' + fecha.toLocaleString(),
+                data: JSON.parse(JSON.stringify(processedData))
+            });
+            localStorage.setItem('zonifiedLists', JSON.stringify(lists));
+        }
+        function displayProcessedData() {
+            const container = document.getElementById('dataContainer');
+            if (!processedData || processedData.length === 0) {
+                container.innerHTML = '<div class="no-data">No hay datos para mostrar</div>';
+                return;
+            }
+            let html = `<div class="list-title">Lista actual</div><table class="data-table"><thead><tr><th>Código</th><th>Nombre</th><th>Zona</th></tr></thead><tbody>`;
+            processedData.forEach(item => {
+                html += `<tr><td>${item.codigo || ''}</td><td>${item.nombre || ''}</td><td>${item.zona || 'sin zona'}</td></tr>`;
+            });
+            html += `</tbody></table>`;
+            container.innerHTML = html;
+        }
+        function displaySavedLists() {
+            const container = document.getElementById('savedListsContainer');
+            let lists = JSON.parse(localStorage.getItem('zonifiedLists') || '[]');
+            savedLists = lists;
+            if (!lists || lists.length === 0) {
+                container.innerHTML = '<div class="no-data">No hay listas zonificadas guardadas</div>';
+                return;
+            }
+            let html = '<div class="list-title">Listas Zonificadas Guardadas</div>';
+            lists.forEach((list, idx) => {
+                html += `<div class="saved-list-card">
+                    <div class="saved-list-header" onclick="toggleListTable(${idx})">
+                        <span class="saved-list-icon">&#128194;</span>
+                        <span>${list.name}</span>
+                        <span class="saved-list-count">(${list.data.length} registros)</span>
+                        <button class="delete-list-btn" onclick="event.stopPropagation();deleteSingleList(${idx})" title="Eliminar esta lista">&#128465;</button>
+                    </div>
+                    <div class="saved-list-table" id="list-table-${idx}">
+                        <table class="data-table">
+                            <thead><tr><th>Código</th><th>Nombre</th><th>Zona</th></tr></thead>
+                            <tbody>`;
+                list.data.forEach(item => {
+                    html += `<tr><td>${item.codigo || ''}</td><td>${item.nombre || ''}</td><td>${item.zona || 'sin zona'}</td></tr>`;
+                });
+                html += `</tbody></table></div></div>`;
+            });
+            container.innerHTML = html;
+        }
+        function toggleListTable(idx) {
+            const tableDiv = document.getElementById('list-table-' + idx);
+            if (tableDiv) {
+                tableDiv.style.display = tableDiv.style.display === 'block' ? 'none' : 'block';
+            }
+        }
+        function deleteSingleList(idx) {
+            let lists = JSON.parse(localStorage.getItem('zonifiedLists') || '[]');
+            lists.splice(idx, 1);
+            localStorage.setItem('zonifiedLists', JSON.stringify(lists));
+            displaySavedLists();
+        }
+        // Mostrar listas guardadas al cargar la página
+        window.onload = function() {
+            displaySavedLists();
+        };
+        
+        // --- QR SECTION LOGIC ---
+        const qrSection = document.getElementById('qrSection');
+        const videoQR = document.getElementById('videoQR');
+        const canvasQR = document.getElementById('canvasQR');
+        const ctxQR = canvasQR.getContext('2d');
+        const resultadoQR = document.getElementById('resultadoQR');
+        const zonaQR = document.getElementById('zonaQR');
+        const mensajeErrorQR = document.getElementById('mensajeErrorQR');
+        const btnIniciarQR = document.getElementById('iniciarCamaraQR');
+        const btnDetenerQR = document.getElementById('detenerCamaraQR');
+        const btnCambiarQR = document.getElementById('cambiarCamaraQR');
+        let streamQR = null;
+        let procesandoQR = false;
+        let camaraActualQR = 'environment';
+        let ultimoQRDetectado = '';
+        function cerrarQRSection() {
+            qrSection.style.display = 'none';
+            document.querySelector('.main-container').style.display = '';
+            detenerCamaraQR();
+            resultadoQR.textContent = 'Esperando código QR...';
+            zonaQR.style.display = 'none';
+            limpiarHistorial();
+        }
+        function mostrarErrorQR(mensaje) {
+            mensajeErrorQR.textContent = mensaje;
+            mensajeErrorQR.style.display = 'block';
+            setTimeout(() => { mensajeErrorQR.style.display = 'none'; }, 5000);
+        }
+        async function iniciarCamaraQR() {
+            try {
+                const constraints = {
+                    video: {
+                        facingMode: camaraActualQR,
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    }
+                };
+                streamQR = await navigator.mediaDevices.getUserMedia(constraints);
+                videoQR.srcObject = streamQR;
+                btnIniciarQR.disabled = true;
+                btnDetenerQR.disabled = false;
+                btnCambiarQR.disabled = false;
+                videoQR.onloadedmetadata = () => {
+                    canvasQR.width = videoQR.videoWidth;
+                    canvasQR.height = videoQR.videoHeight;
+                    detectarQRLoop();
+                };
+                mensajeErrorQR.style.display = 'none';
+            } catch (error) {
+                mostrarErrorQR('No se pudo acceder a la cámara: ' + error.message);
+            }
+        }
+        function detenerCamaraQR() {
+            if (streamQR) {
+                streamQR.getTracks().forEach(track => track.stop());
+                videoQR.srcObject = null;
+                ctxQR.clearRect(0, 0, canvasQR.width, canvasQR.height);
+                btnIniciarQR.disabled = false;
+                btnDetenerQR.disabled = true;
+                btnCambiarQR.disabled = true;
+                ultimoQRDetectado = '';
+            }
+        }
+        async function cambiarCamaraQR() {
+            camaraActualQR = camaraActualQR === 'environment' ? 'user' : 'environment';
+            detenerCamaraQR();
+            await iniciarCamaraQR();
+        }
+        function detectarQRLoop() {
+            if (!streamQR || procesandoQR) {
+                requestAnimationFrame(detectarQRLoop);
+                return;
+            }
+            procesandoQR = true;
+            try {
+                ctxQR.drawImage(videoQR, 0, 0, canvasQR.width, canvasQR.height);
+                const imageData = ctxQR.getImageData(0, 0, canvasQR.width, canvasQR.height);
+                const code = jsQR(imageData.data, imageData.width, imageData.height, {inversionAttempts: 'dontInvert'});
+                if (code) {
+                    if (code.data !== ultimoQRDetectado) {
+                        // Extraer código antes del primer guion
+                        const codigoDetectado = code.data.split('-')[0].trim();
+                        // Buscar en todas las listas zonificadas
+                        let zonaEncontrada = '';
+                        let encontrado = false;
+                        let listas = JSON.parse(localStorage.getItem('zonifiedLists') || '[]');
+                        for(const lista of listas) {
+                            const item = lista.data.find(row => String(row.codigo) === codigoDetectado);
+                            if(item) {
+                                zonaEncontrada = item.zona || '';
+                                encontrado = true;
+                                break;
+                            }
+                        }
+                        
+                        // Actualizar la visualización
+                        resultadoQR.textContent = code.data;
+                        zonaQR.style.display = 'block';
+                        const textoZona = encontrado ? `Zona: ${zonaEncontrada}` : 'Código no encontrado';
+                        zonaQR.textContent = textoZona;
+                        
+                        // Agregar al historial
+                        actualizarHistorial(textoZona);
+                        
+                        // Solo actualizar el último código después de procesar todo
+                        ultimoQRDetectado = code.data;
+                    }
+                }
+                procesandoQR = false;
+                requestAnimationFrame(detectarQRLoop);
+            } catch (error) {
+                procesandoQR = false;
+                requestAnimationFrame(detectarQRLoop);
+            }
+        }
+        btnIniciarQR.addEventListener('click', iniciarCamaraQR);
+        btnDetenerQR.addEventListener('click', detenerCamaraQR);
+        btnCambiarQR.addEventListener('click', cambiarCamaraQR);
+        // --- FIN QR SECTION LOGIC ---
+        
+        function actualizarHistorial(zona) {
+            historialZonas.unshift(zona);
+            mostrarHistorial();
+        }
+        
+        function mostrarHistorial() {
+            const container = document.getElementById('historialZonas');
+            container.innerHTML = historialZonas.map(zona => 
+                `<div>${zona}</div>`
+            ).join('');
+        }
+        
+        function limpiarHistorial() {
+            historialZonas = [];
+            mostrarHistorial();
+        }
+        
+        // Agregar el event listener para el botón de limpiar historial
+        document.getElementById('limpiarHistorial').addEventListener('click', limpiarHistorial);
+    </script>
+</body>
+</html>
